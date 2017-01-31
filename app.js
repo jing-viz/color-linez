@@ -72,7 +72,10 @@ var chesses = canvas.selectAll("circle")
             // var nodeSelection = d3.select(this).style({opacity:'0.8'});
             // nodeSelection.select("text").style({opacity:'1.0'});
             console.log(this);
-            console.log(d3.select(this));
-            d3.select(this).attr("fill", "red");
+            console.log(ele);
+            var ele = d3.select(this)
+                .transition()
+                .attr("fill", "red")
+            ;
         });
 
