@@ -18,7 +18,7 @@ for (var i=0;i<kCellCount;i++) {
             cy : (j + 0.5) * kCellSize,
             x : i * kCellSize,
             y : j * kCellSize,
-            color: "none",
+            color: "lightgrey",
         }
     }
 }
@@ -34,11 +34,28 @@ var svg = d3.select("body")
             // .attr("stroke", "grey")
             ;
 
+// svg.on('click', function() {
+//     var coords = d3.mouse(this);
+//     // console.log(coords);
+// });
 
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Text_formatting
 var canvas = svg.append("g")
             .attr("transform", "translate(" + kMarginSize + ", " +  kMarginSize + ")")
             ;
+
+// https://developer.mozilla.org/en-US/docs/Web/SVG/Element/rect
+var cells = canvas.selectAll("rect")
+    .data(board)
+    .enter()
+    .append("rect")
+        .attr("x", function(d, i) { return d.x; })
+        .attr("y", function(d, i) { return d.y; })
+        .attr("width", kCellSize)
+        .attr("height", kCellSize)
+        .attr("fill", "lightgrey")
+        .attr("stroke", "grey")
+    ;
 
 // https://developer.mozilla.org/en-US/docs/Web/SVG/Element/circle
 var chesses = canvas.selectAll("circle")
@@ -50,17 +67,12 @@ var chesses = canvas.selectAll("circle")
         .attr("r", kBallRadius / 2)
         .attr("fill", function(d, i) { return d.color; })
         .attr("stroke", "none")
-    ;
+        .on('click', function(d){
+            // http://jsfiddle.net/GordyD/0o71rhug/1/
+            // var nodeSelection = d3.select(this).style({opacity:'0.8'});
+            // nodeSelection.select("text").style({opacity:'1.0'});
+            console.log(this);
+            console.log(d3.select(this));
+            d3.select(this).attr("fill", "red");
+        });
 
-// https://developer.mozilla.org/en-US/docs/Web/SVG/Element/rect
-var cells = canvas.selectAll("rect")
-    .data(board)
-    .enter()
-    .append("rect")
-        .attr("x", function(d, i) { return d.x; })
-        .attr("y", function(d, i) { return d.y; })
-        .attr("width", kCellSize)
-        .attr("height", kCellSize)
-        .attr("fill", "none")
-        .attr("stroke", "grey")
-    ;
