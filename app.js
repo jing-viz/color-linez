@@ -123,6 +123,7 @@ function check_connected_chesses(board_id) {
         if (result.length >= 4) {
             board_data[board_id].color_id = kEmptyColorId;
             for (var id of result) {
+                game_data.graph.nodes[id].weight = 1;
                 board_data[id].color_id = kEmptyColorId;
                 game_data.score++;
             }
