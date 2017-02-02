@@ -94,11 +94,15 @@ function check_connected_chesses(board_id) {
     function check_dir(dx, dy) {
         var center_color_id = board_data[board_id].color_id;
         var result = [];
-        for (var x = board_data[board_id].i, y = board_data[board_id].j;
-                x < kCellCount, y < kCellCount; x+=dx, y+=dy ) {
+        var x = board_data[board_id].i+dx, y = board_data[board_id].j+dy;
+        while (x >=0 && x < kCellCount && y >= 0 && y < kCellCount) {
             var idx = y * kCellCount + x;
+            // console.log("x" + x + "y" + y);
             if (board_data[idx].color_id != center_color_id) break;
             result.push(idx);
+            
+            x+=dx;
+            y+=dy;
         }
         return result;
     }
@@ -112,6 +116,17 @@ function check_connected_chesses(board_id) {
         // [+/-1, -/+1]
         check_dir(+1, -1).concat(check_dir(-1, +1)),
     ];
+
+    results.forEach(function (result) {
+        // console.log(result);
+        if (result.length >= 4) {
+            board_data[board_id].color_id = kEmptyColorId;
+            for (var id of result) {
+                board_data[id].color_id = kEmptyColorId;
+                game_data.score++;
+            }
+        }
+    });
 }
 
 var selected_board_id = -1;
