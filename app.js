@@ -86,7 +86,8 @@ function place_new_chesses() {
             board_id = random_board_id();
         }
         game_data.chess_count ++;
-        board_data[board_id].color_id = random_color_id();    
+        board_data[board_id].color_id = random_color_id();
+        game_data.graph.nodes[board_id].weight = 0;
     }
 }
 
@@ -139,13 +140,24 @@ function update_board_data(board_id) {
     else {
         if (board_data[board_id].color_id === kEmptyColorId) {
             // move #selected_board_id -> empty slot #board_id
-            board_data[board_id].color_id = board_data[selected_board_id].color_id;
-            board_data[selected_board_id].color_id = kEmptyColorId;
+            var start = game_data.graph.nodes[selected_board_id];
+            var end = game_data.graph.nodes[board_id];
+            var result = astar.search(game_data.graph, start, end);
+            console.log(result);
 
-            check_connected_chesses(board_id);            
-            place_new_chesses();
+            if (result.length > 0) {
+                // can we move the chess there?
+                board_data[board_id].color_id = board_data[selected_board_id].color_id;
+                board_data[selected_board_id].color_id = kEmptyColorId;
 
-            selected_board_id = -1;
+                game_data.graph.nodes[selected_board_id].weight = 1;
+                game_data.graph.nodes[board_id].weight = 0;
+
+                check_connected_chesses(board_id);            
+                place_new_chesses();
+
+                selected_board_id = -1;
+            }
         }
         else {
             // selecting #board_id as #selected_board_id
@@ -169,6 +181,17 @@ function new_game() {
     game_data = {
         "score": 0,
         "chess_count": 0,
+        "graph" : new Graph([
+            [1,1,1,1,1,1,1,1,1],
+            [1,1,1,1,1,1,1,1,1],
+            [1,1,1,1,1,1,1,1,1],
+            [1,1,1,1,1,1,1,1,1],
+            [1,1,1,1,1,1,1,1,1],
+            [1,1,1,1,1,1,1,1,1],
+            [1,1,1,1,1,1,1,1,1],
+            [1,1,1,1,1,1,1,1,1],
+            [1,1,1,1,1,1,1,1,1],
+        ]),
     };
 }
 
