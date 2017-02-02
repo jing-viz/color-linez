@@ -28,8 +28,8 @@ var chess_colors = [
     "limegreen",
     "steelblue",
     "rosybrown",
-    "fuchsia",
-    "orange",
+    "dimgray",
+    "goldenrod",
 ];
 
 function random_index(max_value) {
@@ -68,6 +68,10 @@ function set_chess_color(selection) {
             return chess_colors[d.color_id];
             })
         ;
+}
+
+function set_game_score() {
+    score_sel.text(function(d) { return "score: " + d.score; })
 }
 
 function place_new_chesses() {
@@ -123,6 +127,8 @@ function check_connected_chesses(board_id) {
         if (result.length >= 4) {
             board_data[board_id].color_id = kEmptyColorId;
             game_data.graph.nodes[board_id].weight = 1;
+            game_data.score++;
+
             for (var id of result) {
                 game_data.graph.nodes[id].weight = 1;
                 board_data[id].color_id = kEmptyColorId;
@@ -145,7 +151,7 @@ function update_board_data(board_id) {
             var start = game_data.graph.nodes[selected_board_id];
             var end = game_data.graph.nodes[board_id];
             var result = astar.search(game_data.graph, start, end);
-            console.log(result);
+            // console.log(result);
 
             if (result.length > 0) {
                 // can we move the chess there?
@@ -167,7 +173,8 @@ function update_board_data(board_id) {
         }
     }
 
-    chesses_sel.call(set_chess_color);        
+    chesses_sel.call(set_chess_color);   
+    set_game_score();     
 }
 
 function new_game() {
@@ -223,10 +230,11 @@ function resize() {
         hud_sel = svg_sel.append("g")
                         .attr("id", "hud");
         score_sel = hud_sel.selectAll("text")
-                .data(game_data)
-                .enter().append("text")
-                .text(function(d) { return d.score; })
-                ;
+            .data([game_data])
+            .enter().append("text")
+            .attr("font-family", "sans-serif")
+            .attr("font-size", "30")
+            ;
 
         // https://developer.mozilla.org/en-US/docs/Web/SVG/Element/rect
         cells_sel = board_sel.selectAll("rect")
@@ -241,7 +249,7 @@ function resize() {
             .data(board_data)
             .enter().append("circle")
                 .attr("stroke", "none")
-                .attr("stroke-width", 2)
+                .attr("stroke-width", 4)
                 .call(set_chess_color)
                 .on('click', function(d){
                     // http://jsfiddle.net/GordyD/0o71rhug/1/
@@ -268,8 +276,8 @@ function resize() {
 
     svg_sel
         .transition()
-        .attr("width", svgMajorSize)
-        .attr("height", svgMajorSize)  
+        .attr("width", width)
+        .attr("height", height)  
         ;
 
     // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Text_formatting
@@ -281,13 +289,13 @@ function resize() {
     if (widthMajor) {
         hud_sel
             .transition()
-            .attr("transform", "translate(" + (kMarginSize * 2 + kBoardSize) + ", " +  kMarginSize + ")")
+            .attr("transform", "translate(" + (kMarginSize * 2 + kBoardSize) + ", " +  kMarginSize * 2 + ")")
             ;
     }
     else {
         hud_sel
             .transition()
-            .attr("transform", "translate(" + kMarginSize + ", " + (kMarginSize * 2 + kBoardSize) + ")")
+            .attr("transform", "translate(" + kMarginSize * 2 + ", " + (kMarginSize * 2 + kBoardSize) + ")")
             ;        
     }
 
@@ -312,4 +320,4 @@ function resize() {
 window.addEventListener('resize', resize); 
 resize();
 place_new_chesses();
-
+set_game_score();
